@@ -280,18 +280,16 @@ defmodule SphericalMercator do
         apply(Kernel, :min, y)
       end
 
-    max_x =
-      apply(Kernel, :max, x)
-    max_y =
-      apply(Kernel, :max, y)
+    max_x = apply(Kernel, :max, x)
+    max_y = apply(Kernel, :max, y)
 
-    [min_x, max_y] =
+    [min_y, max_y] =
       if tms_style do
-        min_y = (:math.pow(2, zoom) - 1) - max_y
-        max_y = (:math.pow(2, zoom) - 1) - min_y
-        [min_x, max_y]
+        tms_min_y = (:math.pow(2, zoom) - 1) - max_y
+        tms_max_y = (:math.pow(2, zoom) - 1) - min_y
+        [tms_min_y, tms_max_y]
       else
-        [min_x, max_y]
+        [min_y, max_y]
       end
 
     [min_x, min_y, max_x, max_y]
