@@ -428,4 +428,21 @@ defmodule SphericalMercatorTest do
     ]
   end
 
+  test "xyz/5 if given coordinates returns xyz bounding box" do
+    result =
+      SphericalMercator.new([size: 512])
+      |> SphericalMercator.xyz([
+        19.932257,
+        50.036332,
+        19.940695,
+        50.048969
+      ], 16)
+
+    assert result == [
+      36396,
+      22212,
+      36398,
+      22215,
+    ]
+  end
 end

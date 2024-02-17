@@ -6,9 +6,11 @@ defmodule SphericalMercator do
 
   The API remains similar, so refer to the original project
   for the documentation.
+
+  The code could be prettier but it aims at following the
+  style of original implementation.
   """
 
-  @epsln 1.0e-10
   @d2r :math.pi() / 180
   @r2d 180 / :math.pi()
   @a 6378137.0
@@ -21,7 +23,7 @@ defmodule SphericalMercator do
   }
 
   @typedoc """
-  Two-element list with coordinates.
+  Two-element list with coordinates in the form `[x,y]` or `[long,lat]`.
   """
   @type coords() :: [float()]
 
@@ -31,9 +33,14 @@ defmodule SphericalMercator do
   @type srs() :: String.t()
 
   @typedoc """
-  Four-element list with bounding box.
+  Four-element list with coords bounding box in the form `[w, s, e, n]`.
   """
-  @type bbox() :: [float()]
+  @type coordsbox() :: [float()]
+
+  @typedoc """
+  Four-element list with XYZ bounding box in the form `[min_x, min_y, max_x, max_y]`.
+  """
+  @type xyzbox() :: [pos_integer()]
 
   defp has_rem(n), do: trunc(n) != n
 
@@ -177,7 +184,7 @@ defmodule SphericalMercator do
 
   Returns a bbox list of values in form `[w, s, e, n]`.
   """
-  @spec bbox(t(), pos_integer(), pos_integer(), number(), boolean(), srs()) :: bbox()
+  @spec bbox(t(), pos_integer(), pos_integer(), number(), boolean(), srs()) :: coordsbox()
   def bbox(%__MODULE__{} = sm, x, y, zoom, tms_style \\ false, srs \\ "WGS84") do
      y =
       if tms_style do
@@ -191,13 +198,12 @@ defmodule SphericalMercator do
 
      bbox = ll(sm, ll, zoom) ++ ll(sm, ur, zoom)
 
-     # if srs == "900913" do
-     #   convert(sm, bbox, "900913")
-     # else
-     #   bbox
-     # end
-     bbox
-   end
+     if srs == "900913" do
+       convert(sm, bbox, "900913")
+     else
+       bbox
+     end
+  end
 
   @doc """
   Convert lon/lat values to 900913 x/y.
@@ -228,6 +234,75 @@ defmodule SphericalMercator do
         end
 
      [x,y]
+  end
+
+  @doc """
+  Convert bbox to xyx bounds
+
+  - `bbox` - bbox in the form `[w, s, e, n]`.
+  - `zoom` - zoom.
+  - `tms_style` - whether to compute using tms-style.
+  - `srs` - projection of input bbox (WGS84|900913).
+
+  Returns XYZ bounding box with list `[minX, maxX, minY, maxY]`.
+  """
+  @spec xyz(t(), coordsbox(), number(), boolean(), srs()) :: xyzbox()
+  def xyz(%__MODULE__{} = sm, bbox, zoom, tms_style \\ false, srs \\ "WGS84") do
+    bbox =
+      if srs == "900913" do
+        convert(sm, bbox, "WGS84")
+      else
+        bbox
+      end
+
+    [w, s, e, n] = bbox
+
+    ll = [w, s]
+    ur = [e, n]
+
+    px_ll = px(sm, ll, zoom)
+    px_ur = px(sm, ur, zoom)
+
+    x = [ trunc(hd(px_ll) / sm.size), trunc((hd(px_ur) - 1) / sm.size) ]
+    y = [ trunc(Enum.at(px_ur, 1) / sm.size), trunc((Enum.at(px_ll, 1) - 1) / sm.size) ]
+
+    min_x =
+      if apply(Kernel, :min, x) < 0 do
+        0
+      else
+        apply(Kernel, :min, x)
+      end
+
+    min_y =
+      if apply(Kernel, :min, y) < 0 do
+        0
+      else
+        apply(Kernel, :min, y)
+      end
+
+    max_x =
+      apply(Kernel, :max, x)
+    max_y =
+      apply(Kernel, :max, y)
+
+    [min_x, max_y] =
+      if tms_style do
+        min_y = (:math.pow(2, zoom) - 1) - max_y
+        max_y = (:math.pow(2, zoom) - 1) - min_y
+        [min_x, max_y]
+      else
+        [min_x, max_y]
+      end
+
+    [min_x, min_y, max_x, max_y]
+  end
+
+  def convert(%SphericalMercator{} = sm, bbox, "900913") do
+    forward(sm, tl(tl(bbox))) ++ forward(sm, hd(hd(bbox)))
+  end
+
+  def convert(%SphericalMercator{} = sm, bbox, "WGS84") do
+    inverse(sm, tl(tl(bbox))) ++ inverse(sm, hd(hd(bbox)))
   end
 
   @doc """
