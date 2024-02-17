@@ -30,8 +30,7 @@ defmodule SphericalMercator.MixProject do
   defp package do
     [
       name: "spherical_mercator",
-      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
       maintainers: ["Marcin Lewandowski"],
       licenses: ["BSD-3-Clause-Modification"],
       links: %{"GitHub" => "https://github.com/mspanc/elixir-spherical-mercator"}
