@@ -1,5 +1,7 @@
 # SphericalMercator
 
+[![.github/workflows/test.yml](https://github.com/mspanc/elixir-spherical-mercator/actions/workflows/test.yml/badge.svg)](https://github.com/mspanc/elixir-spherical-mercator/actions/workflows/test.yml)
+
 This is a port of [MapBox's SphericalMercator JS library](http://github.com/mapbox/sphericalmercator) to Elixir.
 
 The API remains similar, so refer to the original project for documentation.
