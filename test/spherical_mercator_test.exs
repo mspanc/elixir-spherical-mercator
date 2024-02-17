@@ -361,4 +361,59 @@ defmodule SphericalMercatorTest do
       50.05008477838258 # browser returns 6 as last digit but nevermind
     ]
   end
+
+  test "forward/2 if given coordinates within extent returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.forward([19.940695, 50.048969])
+
+    assert result == [
+      2219788.013463977,
+      6454760.73212724 # browser returns 38 instead of 4 at the end but nevermind
+    ]
+  end
+
+  test "forward/2 if given coordinates outside extent (lat, positive) returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.forward([19.940695, 89.9])
+
+    assert result == [
+      2219788.013463977,
+      20037508.342789244 # extent
+    ]
+  end
+
+  test "forward/2 if given coordinates outside extent (lat, negative positive) returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.forward([19.940695, -89.9])
+
+    assert result == [
+      2219788.013463977,
+      -20037508.342789244 # extent
+    ]
+  end
+
+  test "forward/2 if given coordinates outside extent (lng, positive) returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.forward([180.1, 50.048969])
+
+    assert result == [
+      20037508.342789244, # extent
+      6454760.73212724 # browser returns 38 instead of 4 at the end but nevermind
+    ]
+  end
+
+  test "forward/2 if given coordinates outside extent (lng, negative positive) returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.forward([-180.1, 50.048969])
+
+    assert result == [
+      -20037508.342789244, # extent
+      6454760.73212724 # browser returns 38 instead of 4 at the end but nevermind
+    ]
+  end
 end

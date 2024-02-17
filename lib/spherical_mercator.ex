@@ -147,7 +147,7 @@ defmodule SphericalMercator do
   - `zoom` - zoom level.
   """
   @spec ll(t(), coords(), number()) :: coords()
-  def ll(%SphericalMercator{} = sm, px, zoom) do
+  def ll(%__MODULE__{} = sm, px, zoom) do
     if has_rem(zoom) do
       size = sm.size * :math.pow(2, zoom)
       bc = size / 360
@@ -178,7 +178,7 @@ defmodule SphericalMercator do
   Returns a bbox list of values in form `[w, s, e, n]`.
   """
   @spec bbox(t(), pos_integer(), pos_integer(), number(), boolean(), srs()) :: bbox()
-  def bbox(%SphericalMercator{} = sm, x, y, zoom, tms_style \\ false, srs \\ "WGS84") do
+  def bbox(%__MODULE__{} = sm, x, y, zoom, tms_style \\ false, srs \\ "WGS84") do
      y =
       if tms_style do
         (:math.pow(2, zoom) - 1) - y
@@ -198,4 +198,35 @@ defmodule SphericalMercator do
      # end
      bbox
    end
+
+  @doc """
+  Convert lon/lat values to 900913 x/y.
+  """
+  @spec forward(t(), coords()) :: coords()
+  def forward(%__MODULE__{} = _sm, ll) do
+    x = @a * hd(ll) * @d2r
+    y = @a * :math.log(:math.tan((:math.pi * 0.25) + (0.5 * Enum.at(ll, 1) * @d2r)))
+
+    x =
+      cond do
+        x > @maxextent ->
+          @maxextent
+        x < -@maxextent ->
+          -@maxextent
+        true ->
+          x
+      end
+
+      y =
+        cond do
+          y > @maxextent ->
+            @maxextent
+          y < -@maxextent ->
+            -@maxextent
+          true ->
+            y
+        end
+
+     [x,y]
+  end
 end
