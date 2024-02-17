@@ -1,7 +1,7 @@
 on: push
 
 jobs:
-  test-api:
+  test:
     runs-on: ubuntu-latest
     env:
       MIX_ENV: test
