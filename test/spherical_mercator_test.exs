@@ -327,7 +327,7 @@ defmodule SphericalMercatorTest do
     ]
   end
 
-  test "ll/3 for size 512 and integer zoom returns WGS84 coordinages" do
+  test "ll/3 for size 512 and integer zoom returns WGS84 coordinates" do
     result =
       SphericalMercator.new([size: 512])
       |> SphericalMercator.ll([9317912, 5686353], 15)
@@ -338,7 +338,7 @@ defmodule SphericalMercatorTest do
     ]
   end
 
-  test "ll/3 for size 512 and floating-point zoom returns WGS84 coordinages" do
+  test "ll/3 for size 512 and floating-point zoom returns WGS84 coordinates" do
     result =
       SphericalMercator.new([size: 512])
       |> SphericalMercator.ll([12295058, 7503187], 15.4)
@@ -346,6 +346,19 @@ defmodule SphericalMercatorTest do
     assert result == [
       19.94069084078761,
       50.04897672759276
+    ]
+  end
+
+  test "bbox/3 for size 512 returns and integer zoom returns bounding box" do
+   result =
+     SphericalMercator.new([size: 512])
+     |> SphericalMercator.bbox(36396, 22212, 16)
+
+    assert result == [
+      19.92919921875,
+      50.04655739071663,
+      19.9346923828125,
+      50.05008477838258 # browser returns 6 as last digit but nevermind
     ]
   end
 end

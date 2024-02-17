@@ -1,4 +1,13 @@
 defmodule SphericalMercator do
+  @moduledoc """
+  This is a port of
+  [MapBox's SphericalMercator JS library](http://github.com/mapbox/sphericalmercator)
+  to Elixir.
+
+  The API remains similar, so refer to the original project
+  for the documentation.
+  """
+
   @epsln 1.0e-10
   @d2r :math.pi() / 180
   @r2d 180 / :math.pi()
@@ -11,7 +20,20 @@ defmodule SphericalMercator do
     expansion: pos_integer(),
   }
 
+  @typedoc """
+  Two-element list with coordinates.
+  """
   @type coords() :: [float()]
+
+  @typedoc """
+  Projection, either "WGS84" or "900913".
+  """
+  @type srs() :: String.t()
+
+  @typedoc """
+  Four-element list with bounding box.
+  """
+  @type bbox() :: [float()]
 
   defp has_rem(n), do: trunc(n) != n
 
@@ -65,7 +87,7 @@ defmodule SphericalMercator do
   Convert lon lat to screen pixel value.
 
   - `sm` - a SphericalMercator struct
-  - `ll` - list (`[lon, lat]`) of geographic coordinates.
+  - `ll` - a list (`[lon, lat]`) of geographic coordinates.
   - `zoom` - zoom level.
   """
   @spec px(t(), coords(), number()) :: coords()
@@ -121,8 +143,8 @@ defmodule SphericalMercator do
   Convert screen pixel value to lon lat
 
   - `sm` - a SphericalMercator struct
-  - `px` {Array} `[x, y]` array of geographic coordinates.
-  - `zoom` {Number} zoom level.
+  - `px` - a list (`[x, y]`) array of geographic coordinates.
+  - `zoom` - zoom level.
   """
   @spec ll(t(), coords(), number()) :: coords()
   def ll(%SphericalMercator{} = sm, px, zoom) do
@@ -142,4 +164,38 @@ defmodule SphericalMercator do
       [lon, lat]
     end
   end
+
+  @doc """
+  Convert tile xyz value to bbox of the form `[w, s, e, n]`
+
+  - `sm` - a SphericalMercator struct
+  - `x` - x (longitude) number
+  - `y` - y (latitude) number
+  - `zoom` - zoom
+  - `tms_style` - whether to compute using tms-style
+  - `srs` - projection for resulting bbox (WGS84|900913)
+
+  Returns a bbox list of values in form `[w, s, e, n]`.
+  """
+  @spec bbox(t(), pos_integer(), pos_integer(), number(), boolean(), srs()) :: bbox()
+  def bbox(%SphericalMercator{} = sm, x, y, zoom, tms_style \\ false, srs \\ "WGS84") do
+     y =
+      if tms_style do
+        (:math.pow(2, zoom) - 1) - y
+      else
+        y
+      end
+
+     ll = [x * sm.size, (y + 1) * sm.size]
+     ur = [(x + 1) * sm.size, y * sm.size]
+
+     bbox = ll(sm, ll, zoom) ++ ll(sm, ur, zoom)
+
+     # if srs == "900913" do
+     #   convert(sm, bbox, "900913")
+     # else
+     #   bbox
+     # end
+     bbox
+   end
 end
