@@ -4,25 +4,37 @@ defmodule SphericalMercator.MixProject do
   def project do
     [
       app: :spherical_mercator,
-      version: "0.1.0",
+      version: "1.0.0",
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      name: "Spherical Mercator",
+      description: description(),
+      source_url: "https://github.com/mspanc/elixir-spherical-mercator/",
+      package: package()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger]
-    ]
+    []
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
+    []
+  end
+
+  defp description do
+    "spherical_mercator provides projection math for converting between mercator meters, screen pixels (of 256x256 or configurable-size tiles), and latitude/longitude. This is a port of MapBox's SphericalMercator JS library to Elixir."
+  end
+
+  defp package do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      name: "spherical_mercator",
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      maintainers: ["Marcin Lewandowski"],
+      licenses: ["BSD-3-Clause-Modification"],
+      links: %{"GitHub" => "https://github.com/mspanc/elixir-spherical-mercator"}
     ]
   end
 end

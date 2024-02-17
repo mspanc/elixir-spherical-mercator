@@ -6,6 +6,12 @@ This is a port of [MapBox's SphericalMercator JS library](http://github.com/mapb
 
 The API remains similar, so refer to the original project for the documentation.
 
+## Versions
+
+| JS version | Elixir version |
+|------------|----------------|
+| 1.2.0      | 1.0.0          |
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
@@ -14,7 +20,7 @@ by adding `spherical_mercator` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:spherical_mercator, "~> 0.1.0"}
+    {:spherical_mercator, "~> 1.0"}
   ]
 end
 ```
