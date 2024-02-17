@@ -229,4 +229,15 @@ defmodule SphericalMercator do
 
      [x,y]
   end
+
+  @doc """
+  Convert 900913 x/y values to lon/lat.
+  """
+  @spec inverse(t(), coords()) :: coords()
+  def inverse(%__MODULE__{} = _sm, xy) do
+    [
+      hd(xy) * @r2d / @a,
+      ((:math.pi * 0.5) - 2.0 * :math.atan(:math.exp(-Enum.at(xy, 1) / @a))) * @r2d
+    ]
+  end
 end

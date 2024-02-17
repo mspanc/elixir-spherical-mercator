@@ -416,4 +416,16 @@ defmodule SphericalMercatorTest do
       6454760.73212724 # browser returns 38 instead of 4 at the end but nevermind
     ]
   end
+
+  test "inverse/2 if given coordinates within extent returns coordinates" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.inverse([2219788, 6454760])
+
+    assert result == [
+      19.940694879051044,
+      50.048964776814756
+    ]
+  end
+
 end
