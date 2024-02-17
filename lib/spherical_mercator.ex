@@ -17,7 +17,7 @@ defmodule SphericalMercator do
   @maxextent 20037508.342789244
 
   @type t() :: %__MODULE__{
-    cache: Map.t(),
+    cache: map(),
     size: number(),
     expansion: pos_integer(),
   }
