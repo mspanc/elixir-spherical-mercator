@@ -445,4 +445,40 @@ defmodule SphericalMercatorTest do
       22215,
     ]
   end
+
+  test "convert/3 if given coordinates are in WGS84 and target is 900913 it returns bounding box" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.convert([
+        19.932257,
+        50.036332,
+        19.940695,
+        50.048969
+      ], "900913")
+
+    assert result == [
+      2218848.6996006626,
+      6452570.282497349,
+      2219788.013463977,
+      6454760.73212724 # browser returns 38 instead of 4 at the end but nevermind
+    ]
+  end
+
+  test "convert/3 if given coordinates are in 900913 and target is WGS84 it returns bounding box" do
+    result =
+      SphericalMercator.new()
+      |> SphericalMercator.convert([
+        2218848.6,
+        6452570.2,
+        2219788.0,
+        6454760.7
+      ], "WGS84")
+
+    assert result == [
+      19.932256105272025,
+      50.036331523998975,
+      19.940694879051044,
+      50.04896881467802
+    ]
+  end
 end

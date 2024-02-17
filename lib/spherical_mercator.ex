@@ -297,12 +297,22 @@ defmodule SphericalMercator do
     [min_x, min_y, max_x, max_y]
   end
 
-  def convert(%SphericalMercator{} = sm, bbox, "900913") do
-    forward(sm, tl(tl(bbox))) ++ forward(sm, hd(hd(bbox)))
+  @doc """
+  Convert projection of given bbox.
+
+  - `bbox` - bbox in the form `[w, s, e, n]`.
+  - `to` - projection of output bbox (WGS84|900913). Input bbox
+         assumed to be the "other" projection.
+
+  Returns bbox with reprojected coordinates.
+  """
+  @spec convert(t(), coordsbox(), srs()) :: coordsbox()
+  def convert(%SphericalMercator{} = sm, [w, s, e, n], "900913") do
+    forward(sm, [w, s]) ++ forward(sm, [e, n])
   end
 
-  def convert(%SphericalMercator{} = sm, bbox, "WGS84") do
-    inverse(sm, tl(tl(bbox))) ++ inverse(sm, hd(hd(bbox)))
+  def convert(%SphericalMercator{} = sm, [w, s, e, n], "WGS84") do
+    inverse(sm, [w, s]) ++ inverse(sm, [e, n])
   end
 
   @doc """
